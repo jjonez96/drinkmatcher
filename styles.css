@@ -1,0 +1,25 @@
+body {
+  background: linear-gradient(
+    130deg,
+    #fd297b,
+    #ff5864,
+    #ff655b
+  ); /* Gradient background */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.card {
+  border: none; /* Remove border from cards */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for cards */
+}
+
+.card-text {
+  color: #333333; /* Dark text for card description */
+}
+
+.btn-danger:hover,
+.btn-success:hover {
+  filter: brightness(90%); /* Slightly darken on hover */
+}
