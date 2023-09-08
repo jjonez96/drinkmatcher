@@ -8,11 +8,12 @@
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#" onclick="displayMainPage()"
+    <nav class="navbar navbar-expand-lg navbar-light bg-linavbar-light">
+      <a class="navbar-brand text-light" href="#" onclick="displayMainPage()"
         >Recipe Matcher</a
       >
       <button
@@ -29,34 +30,17 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="#" onclick="displayLikedRecipes()"
+            <a
+              class="navbar-brand text-light"
+              href="#"
+              onclick="displayLikedRecipes()"
               >Liked Recipes</a
             >
           </li>
         </ul>
       </div>
     </nav>
-
-    <div class="container mt-5">
-      <h1 class="text-center">Recipe Matcher</h1>
-      <div class="card" id="recipeCard">
-        <div class="card-body">
-          <h5 class="card-title" id="recipeName"></h5>
-          <p class="card-text" id="recipeDescription"></p>
-        </div>
-      </div>
-      <div class="row mt-3">
-        <div class="col-6 text-center">
-          <button class="btn btn-danger" onclick="dislikeRecipe()">
-            Dislike
-          </button>
-        </div>
-        <div class="col-6 text-center">
-          <button class="btn btn-success" onclick="likeRecipe()">Like</button>
-        </div>
-      </div>
-    </div>
-
+    <div class="container mt-5"></div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

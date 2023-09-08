@@ -21,7 +21,7 @@ const likeRecipe = () => {
 };
 
 window.addEventListener("load", function () {
-  displayRecipe();
+  displayMainPage();
 });
 
 const dislikeRecipe = () => {
@@ -64,10 +64,10 @@ const displayLikedRecipes = () => {
     .map(
       (recipe, index) => `
     <div class="card mb-3">
-      <div class="card-body">
+      <div class="card-body text-center">
         <h5 class="card-title">${recipe.name}</h5>
         <p class="card-text">${recipe.description}</p>
-        <button class="btn btn-danger" onclick="deleteLikedRecipe(${index})">Delete</button>
+        <button class="btn btn-danger  btn-sm" onclick="deleteLikedRecipe(${index})">Delete Match</button>
       </div>
     </div>
   `
@@ -77,8 +77,8 @@ const displayLikedRecipes = () => {
   // Update the container with liked recipes
   container.innerHTML = `
   <div class="container">
-    <h1 class="text-center">Liked Recipes</h1>
-    <h4 class="text-center"> Matches: ${likedRecipes.length} </h4>
+    <h1 class="text-center text-light">Liked Recipes</h1>
+    <h4 class="text-center text-light"> Matches: ${likedRecipes.length} </h4>
     <div class="card-columns">
       ${likedRecipesHTML}
     </div>
@@ -90,21 +90,27 @@ const displayMainPage = () => {
   const container = document.querySelector(".container");
   // Clear the container and display the main page content
   container.innerHTML = `
-    <h1 class="text-center">Recipe Matcher</h1>
-    <div class="card" id="recipeCard">
-      <div class="card-body">
-        <h5 class="card-title" id="recipeName">Recipe Name</h5>
-        <p class="card-text" id="recipeDescription">Recipe Description</p>
+<div class="container mt-5">
+  <h1 class="text-center text-light">Recipe Matcher</h1>
+  <div class="card text-center" id="recipeCard">
+    <div class="card-body">
+      <h5 class="card-title" id="recipeName"></h5>
+      <p class="card-text" id="recipeDescription"></p>
+
+      <div class="row ">
+        <div class="col-6">
+          <button class="btn btn-danger btn-block" onclick="dislikeRecipe()">
+            Dislike
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-success btn-block" onclick="likeRecipe()">Like</button>
+        </div>
       </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-6 text-center">
-        <button class="btn btn-danger" onclick="dislikeRecipe()">Dislike</button>
-      </div>
-      <div class="col-6 text-center">
-        <button class="btn btn-success" onclick="likeRecipe()">Like</button>
-      </div>
-    </div>
+  </div>
+</div>
+
   `;
   // Initialize or reset the recipe index
   currentRecipeIndex = 0;
