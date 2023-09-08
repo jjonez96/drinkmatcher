@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Receipe Matcher</title>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center">Receipe Matcher</h1>
+      <div class="card" id="recipeCard">
+        <div class="card-body">
+          <h5 class="card-title" id="recipeName">Recipe Name</h5>
+          <p class="card-text" id="recipeDescription">Recipe Description</p>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-6 text-center">
+          <button class="btn btn-danger" onclick="dislikeRecipe()">
+            Dislike
+          </button>
+        </div>
+        <div class="col-6 text-center">
+          <button class="btn btn-success" onclick="likeRecipe()">Like</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
