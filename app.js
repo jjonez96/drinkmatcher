@@ -16,7 +16,20 @@ const fetchRandomDrink = () => {
       return response.json();
     })
     .then((data) => {
-      drinks = data.drinks;
+      // Filter out non-alcoholic drinks
+      const alcoholicDrinks = data.drinks.filter(
+        (drink) =>
+          drink.strAlcoholic === "Alcoholic" ||
+          drink.strAlcoholic === "Optional alcohol"
+      );
+
+      if (alcoholicDrinks.length === 0) {
+        // If no alcoholic drinks were found, fetch again
+        fetchRandomDrink();
+        return;
+      }
+
+      drinks = alcoholicDrinks;
       displayDrink();
     })
     .catch((error) => {
@@ -42,10 +55,9 @@ const displayDrink = () => {
   const drinkCategory = document.getElementById("drinkCategory");
   const drinkGlass = document.getElementById("drinkGlass");
   const drinkIngredients = document.getElementById("drinkIngredients");
-  const isAlcoholic = document.getElementById("isAlcoholic");
+
   const drink = drinks[0];
 
-  isAlcoholic.innerText = drink.strAlcoholic;
   drinkName.innerText = drink.strDrink;
   drinkDescription.innerText = drink.strInstructions;
   drinkImage.src = drink.strDrinkThumb;
@@ -116,8 +128,6 @@ const displayLikedDrinks = () => {
         <ul class="text-left">
           ${generateIngredientsList(recipe)}
         </ul>
-        <b class="card-text"> ${recipe.strAlcoholic}</b>
-
                 <p class="card-text">Category: ${recipe.strCategory}</p>
         <p class="card-text">Glass: ${recipe.strGlass}</p>
         <br>
@@ -191,7 +201,6 @@ const displayMainPage = () => {
             <div class="col-md-6">
               <p class="card-text" id="drinkCategory"></p>
               <p class="card-text" id="drinkGlass"></p>
-              <b class="card-text" id="isAlcoholic"></b>
             </div>
           </div>
           <div class="row mt-3">
