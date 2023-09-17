@@ -1,119 +1,220 @@
-const recipes = [
-  { name: "Recipe 1", description: "This is recipe 1." },
-  { name: "Recipe 2", description: "This is recipe 2." },
-  { name: "Recipe 3", description: "This is recipe 3." },
-];
-
-let currentRecipeIndex = 0;
-
-const displayRecipe = () => {
-  const recipeName = document.getElementById("recipeName");
-  const recipeDescription = document.getElementById("recipeDescription");
-  recipeName.innerText = recipes[currentRecipeIndex].name;
-  recipeDescription.innerText = recipes[currentRecipeIndex].description;
-};
-
-const likeRecipe = () => {
-  const likedRecipes = JSON.parse(localStorage.getItem("likedRecipes")) || [];
-  likedRecipes.push(recipes[currentRecipeIndex]);
-  localStorage.setItem("likedRecipes", JSON.stringify(likedRecipes));
-  nextRecipe();
-};
-
-window.addEventListener("load", function () {
+document.addEventListener("DOMContentLoaded", function () {
+  fetchRandomDrink();
   displayMainPage();
+  displayLikedDrinks();
 });
 
-const dislikeRecipe = () => {
-  nextRecipe();
+let drinks = [];
+const fetchRandomDrink = () => {
+  fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php", {
+    method: "GET",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      drinks = data.drinks;
+      displayDrink();
+    })
+    .catch((error) => {
+      console.error("Error fetching random drink:", error);
+    });
 };
 
-const nextRecipe = () => {
-  currentRecipeIndex++;
-  if (currentRecipeIndex < recipes.length) {
-    displayRecipe();
-  } else {
-    alert("No more recipes!");
-    currentRecipeIndex = 0;
-    displayRecipe();
+const likeDrink = () => {
+  const likedDrinks = JSON.parse(localStorage.getItem("likedDrinks")) || [];
+  likedDrinks.push(drinks[0]);
+  localStorage.setItem("likedDrinks", JSON.stringify(likedDrinks));
+  fetchRandomDrink();
+};
+
+const dislikeDrink = () => {
+  fetchRandomDrink();
+};
+
+const displayDrink = () => {
+  const drinkName = document.getElementById("drinkName");
+  const drinkDescription = document.getElementById("drinkDescription");
+  const drinkImage = document.getElementById("drinkImage");
+  const drinkCategory = document.getElementById("drinkCategory");
+  const drinkGlass = document.getElementById("drinkGlass");
+  const drinkIngredients = document.getElementById("drinkIngredients");
+  const isAlcoholic = document.getElementById("isAlcoholic");
+  const drink = drinks[0];
+
+  isAlcoholic.innerText = drink.strAlcoholic;
+  drinkName.innerText = drink.strDrink;
+  drinkDescription.innerText = drink.strInstructions;
+  drinkImage.src = drink.strDrinkThumb;
+  drinkCategory.innerText = `Category: ${drink.strCategory}`;
+  drinkGlass.innerText = `Glass: ${drink.strGlass}`;
+
+  // Build a list of ingredients and measurements
+  let ingredientsList = "<ul>";
+  for (let i = 1; i <= 15; i++) {
+    const ingredient = drink[`strIngredient${i}`];
+    const measurement = drink[`strMeasure${i}`];
+    if (ingredient && measurement) {
+      ingredientsList += `<li>${measurement} ${ingredient}</li>`;
+    }
   }
+  ingredientsList += "</ul>";
+  drinkIngredients.innerHTML = ingredientsList;
 };
 
-const deleteLikedRecipe = (index) => {
-  const likedRecipes = JSON.parse(localStorage.getItem("likedRecipes")) || [];
+const deleteLikedDrink = (index) => {
+  const likedDrinks = JSON.parse(localStorage.getItem("likedDrinks")) || [];
 
   // Check if the index is valid
-  if (index >= 0 && index < likedRecipes.length) {
-    likedRecipes.splice(index, 1); // Remove the recipe at the specified index
-    localStorage.setItem("likedRecipes", JSON.stringify(likedRecipes));
+  if (index >= 0 && index < likedDrinks.length) {
+    likedDrinks.splice(index, 1);
+    localStorage.setItem("likedDrinks", JSON.stringify(likedDrinks));
 
-    // After deleting, re-display the liked recipes
-    displayLikedRecipes();
+    // After deleting, re-display the liked drinks
+    displayLikedDrinks();
   }
 };
 
-// Modify the displayLikedRecipes function to add a delete button for each liked recipe
-const displayLikedRecipes = () => {
+// Modify the displayLikedDrinks function to add a delete button for each liked recipe
+const displayLikedDrinks = () => {
   const container = document.querySelector(".container");
 
-  // Retrieve liked recipes from local storage
-  const likedRecipes = JSON.parse(localStorage.getItem("likedRecipes")) || [];
+  // Retrieve liked drinks from local storage
+  const likedDrinks = JSON.parse(localStorage.getItem("likedDrinks")) || [];
 
-  // Generate HTML for liked recipes with delete buttons
-  const likedRecipesHTML = likedRecipes
+  // Generate HTML for liked drinks with images and additional data
+  const likedDrinksHTML = likedDrinks
     .map(
       (recipe, index) => `
     <div class="card mb-3">
       <div class="card-body text-center">
-        <h5 class="card-title">${recipe.name}</h5>
-        <p class="card-text">${recipe.description}</p>
-        <button class="btn btn-danger  btn-sm" onclick="deleteLikedRecipe(${index})">Delete Match</button>
+        <h5 class="card-title">${recipe.strDrink}</h5>
+        <img id="drinkImage" src="${recipe.strDrinkThumb}" alt="${
+        recipe.strDrink
+      }" class="img-fluid mb-2">
+  <div class="card-header cardd" id="drinkHeader${index}">
+              <h5 class="mb-0">
+               <button
+              class="btn btn-info "
+              data-toggle="collapse"
+              data-target="#drinkInstructions${index}"
+              aria-expanded="true"
+              aria-controls="drinkInstructions${index}"
+            >
+              Instructions
+            </button>
+              </h5>
+            </div>
+           <div id="drinkInstructions${index}" class="collapse " aria-labelledby="drinkHeader${index}">
+          <div class="card-body">
+            <p class="card-text">${recipe.strInstructions}</p>
+          </div>
+        </div>
+        <ul class="text-left">
+          ${generateIngredientsList(recipe)}
+        </ul>
+        <b class="card-text"> ${recipe.strAlcoholic}</b>
+
+                <p class="card-text">Category: ${recipe.strCategory}</p>
+        <p class="card-text">Glass: ${recipe.strGlass}</p>
+        <br>
+        <button class="btn btn-danger btn-sm" onclick="deleteLikedDrink(${index})">Delete Match</button>
       </div>
     </div>
   `
     )
     .join("");
 
-  // Update the container with liked recipes
+  // Update the container with liked drinks
   container.innerHTML = `
   <div class="container">
     <h1 class="text-center text-light">Liked Recipes</h1>
-    <h4 class="text-center text-light"> Matches: ${likedRecipes.length} </h4>
+    <h4 class="text-center text-light"> Matches: ${likedDrinks.length} </h4>
     <div class="card-columns">
-      ${likedRecipesHTML}
+      ${likedDrinksHTML}
     </div>
     </div>
   `;
 };
 
+// Helper function to generate ingredients list
+const generateIngredientsList = (recipe) => {
+  let ingredientsList = "";
+  for (let i = 1; i <= 15; i++) {
+    const ingredient = recipe[`strIngredient${i}`];
+    const measurement = recipe[`strMeasure${i}`];
+    if (ingredient && measurement) {
+      ingredientsList += `<li>${measurement} ${ingredient}</li>`;
+    }
+  }
+  return ingredientsList;
+};
 const displayMainPage = () => {
   const container = document.querySelector(".container");
   // Clear the container and display the main page content
   container.innerHTML = `
-<div class="container mt-5">
-  <h1 class="text-center text-light">Recipe Matcher</h1>
-  <div class="card text-center" id="recipeCard">
-    <div class="card-body">
-      <h5 class="card-title" id="recipeName"></h5>
-      <p class="card-text" id="recipeDescription"></p>
-
-      <div class="row ">
-        <div class="col-6">
-          <button class="btn btn-danger btn-block" onclick="dislikeRecipe()">
-            Dislike
-          </button>
-        </div>
-        <div class="col-6">
-          <button class="btn btn-success btn-block" onclick="likeRecipe()">Like</button>
+    <div class="container mt-5">
+      <h1 class="text-center text-light">Drink Matcher
+        <i class="fa-solid fa-martini-glass-citrus" style="color: #fff"></i>
+      </h1>
+      <div class="card text-center" id="drinkCard">
+        <div class="card-body">
+          <h5 class="card-title" id="drinkName"></h5>
+          <img src="" alt="Cocktail Image" id="drinkImage" class="img-fluid mb-2">
+          <div class="card mb-3">
+            <div class="card-header cardd" id="drinkHeader">
+              <h5 class="mb-0">
+                <button
+                  class="btn btn-link"
+                  data-toggle="collapse"
+                  data-target="#drinkInstructions"
+                  aria-expanded="true"
+                  aria-controls="drinkInstructions"
+                >
+                  Instructions
+                </button>
+              </h5>
+            </div>
+            <div id="drinkInstructions" class="collapse" aria-labelledby="drinkHeader">
+              <div class="card-body">
+                <p class="card-text text-left" id="drinkDescription"></p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div id="drinkIngredients" class="text-left"></div>
+            </div>
+            <div class="col-md-6">
+              <p class="card-text" id="drinkCategory"></p>
+              <p class="card-text" id="drinkGlass"></p>
+              <b class="card-text" id="isAlcoholic"></b>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+              <button class="btn btn-danger btn-block" onclick="dislikeDrink()">
+                Dislike
+     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down" viewBox="0 0 16 16">
+  <path d="M8.864 15.674c-.956.24-1.843-.484-1.908-1.42-.072-1.05-.23-2.015-.428-2.59-.125-.36-.479-1.012-1.04-1.638-.557-.624-1.282-1.179-2.131-1.41C2.685 8.432 2 7.85 2 7V3c0-.845.682-1.464 1.448-1.546 1.07-.113 1.564-.415 2.068-.723l.048-.029c.272-.166.578-.349.97-.484C6.931.08 7.395 0 8 0h3.5c.937 0 1.599.478 1.934 1.064.164.287.254.607.254.913 0 .152-.023.312-.077.464.201.262.38.577.488.9.11.33.172.762.004 1.15.069.13.12.268.159.403.077.27.113.567.113.856 0 .289-.036.586-.113.856-.035.12-.08.244-.138.363.394.571.418 1.2.234 1.733-.206.592-.682 1.1-1.2 1.272-.847.283-1.803.276-2.516.211a9.877 9.877 0 0 1-.443-.05 9.364 9.364 0 0 1-.062 4.51c-.138.508-.55.848-1.012.964l-.261.065zM11.5 1H8c-.51 0-.863.068-1.14.163-.281.097-.506.229-.776.393l-.04.025c-.555.338-1.198.73-2.49.868-.333.035-.554.29-.554.55V7c0 .255.226.543.62.65 1.095.3 1.977.997 2.614 1.709.635.71 1.064 1.475 1.238 1.977.243.7.407 1.768.482 2.85.025.362.36.595.667.518l.262-.065c.16-.04.258-.144.288-.255a8.34 8.34 0 0 0-.145-4.726.5.5 0 0 1 .595-.643h.003l.014.004.058.013a8.912 8.912 0 0 0 1.036.157c.663.06 1.457.054 2.11-.163.175-.059.45-.301.57-.651.107-.308.087-.67-.266-1.021L12.793 7l.353-.354c.043-.042.105-.14.154-.315.048-.167.075-.37.075-.581 0-.211-.027-.414-.075-.581-.05-.174-.111-.273-.154-.315l-.353-.354.353-.354c.047-.047.109-.176.005-.488a2.224 2.224 0 0 0-.505-.804l-.353-.354.353-.354c.006-.005.041-.05.041-.17a.866.866 0 0 0-.121-.415C12.4 1.272 12.063 1 11.5 1z"/>
+</svg>
+              </button>
+            </div>
+            <div class="col-6">
+              <button class="btn btn-success btn-block" onclick="likeDrink()">
+                Like
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+  <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+</svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
   `;
-  // Initialize or reset the recipe index
-  currentRecipeIndex = 0;
-  // Display the first recipe
-  displayRecipe();
+  displayDrink();
 };
