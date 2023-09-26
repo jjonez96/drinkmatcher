@@ -1,34 +1,36 @@
 body {
-  background: linear-gradient(
-    130deg,
-    #fd297b,
-    #ff5864,
-    #ff655b
-  ); /* Gradient background */
+  background: linear-gradient(130deg, #fd297b, #ff5864, #ff655b);
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
 .card {
-  border: none; /* Remove border from cards */
+  border: none;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for cards */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-text {
-  color: #333333; /* Dark text for card description */
+  color: #333333;
 }
 
 .btn-danger:hover,
 .btn-success:hover {
-  filter: brightness(90%); /* Slightly darken on hover */
+  filter: brightness(90%);
 }
 #drinkImage {
   height: 300px;
-
   border-radius: 30px;
 }
-.cardd {
+.dropdwn {
   background-color: transparent;
   border: none;
+}
+.modalheading {
+  margin-left: 35%;
+}
+@media only screen and (max-width: 900px) {
+  .modalheading {
+    margin-left: 25%;
+  }
 }
