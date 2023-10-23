@@ -3,7 +3,7 @@ const {
   generateIngredientsList,
   fetchRandomDrink,
   likeDrink,
-} = require("./utils"); // Replace with the actual path to your file
+} = require("./functions"); // Replace with the actual path to your file
 const fetchMock = require("jest-fetch-mock");
 
 describe("generateIngredientsList", () => {
